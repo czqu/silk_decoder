@@ -5,7 +5,6 @@ import 'dart:isolate';
 import 'package:ffi/ffi.dart';
 import 'silk_decoder_bindings_generated.dart';
 
-
 /// Asynchronously decodes a SILK file to PCM format.
 ///
 /// This function executes the native `decode_silk_file` function on a separate
@@ -13,9 +12,11 @@ import 'silk_decoder_bindings_generated.dart';
 ///
 /// Returns a future that completes with the exit code from the native function
 /// (0 for success).
-Future<int> decodeSilkFileAsync(String inputPath,
-    String outputPath,
-    int sampleRate,) async {
+Future<int> decodeSilkFileAsync(
+  String inputPath,
+  String outputPath,
+  int sampleRate,
+) async {
   final SendPort helperIsolateSendPort = await _helperIsolateSendPort;
   final int requestId = _nextDecodeRequestId++;
   final request = _DecodeRequest(requestId, inputPath, outputPath, sampleRate);
@@ -25,13 +26,12 @@ Future<int> decodeSilkFileAsync(String inputPath,
   return completer.future;
 }
 
-
 const String _libName = 'silk_decoder';
 
 /// The dynamic library in which the symbols for [SilkDecoderBindings] can be found.
 final DynamicLibrary _dylib = () {
   if (Platform.isMacOS || Platform.isIOS) {
-    return DynamicLibrary.open('$_libName.framework/$_libName');
+    return DynamicLibrary.process();
   }
   if (Platform.isAndroid || Platform.isLinux) {
     return DynamicLibrary.open('lib$_libName.so');
@@ -52,10 +52,12 @@ class _DecodeRequest {
   final String outputPath;
   final int sampleRate;
 
-  const _DecodeRequest(this.id,
-      this.inputPath,
-      this.outputPath,
-      this.sampleRate,);
+  const _DecodeRequest(
+    this.id,
+    this.inputPath,
+    this.outputPath,
+    this.sampleRate,
+  );
 }
 
 /// A response with the result of the decoding operation.
@@ -66,13 +68,11 @@ class _DecodeResponse {
   const _DecodeResponse(this.id, this.result);
 }
 
-
 /// Counter for decode requests.
 int _nextDecodeRequestId = 0;
 
 /// Mapping for pending decode requests.
 final Map<int, Completer<int>> _decodeRequests = <int, Completer<int>>{};
-
 
 /// The SendPort belonging to the helper isolate.
 Future<SendPort> _helperIsolateSendPort = () async {
@@ -81,7 +81,6 @@ Future<SendPort> _helperIsolateSendPort = () async {
   final ReceivePort receivePort = ReceivePort()
     ..listen((dynamic data) {
       if (data is SendPort) {
-        // The helper isolate sent us the port on which we can sent it requests.
         completer.complete(data);
         return;
       }
@@ -94,7 +93,6 @@ Future<SendPort> _helperIsolateSendPort = () async {
 
       throw UnsupportedError('Unsupported message type: ${data.runtimeType}');
     });
-
 
   await Isolate.spawn((SendPort sendPort) async {
     final ReceivePort helperReceivePort = ReceivePort()
@@ -110,7 +108,7 @@ Future<SendPort> _helperIsolateSendPort = () async {
             data.sampleRate,
           );
 
-          // Free the memory allocated for the C strings.
+
           malloc.free(inputPath);
           malloc.free(outputPath);
 
@@ -122,10 +120,8 @@ Future<SendPort> _helperIsolateSendPort = () async {
         throw UnsupportedError('Unsupported message type: ${data.runtimeType}');
       });
 
-    // Send the port to the main isolate on which we can receive requests.
     sendPort.send(helperReceivePort.sendPort);
   }, receivePort.sendPort);
-
 
   return completer.future;
 }();

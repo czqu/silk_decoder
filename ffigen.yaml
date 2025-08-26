@@ -8,10 +8,8 @@ output: 'lib/silk_decoder_bindings_generated.dart'
 headers:
   entry-points:
     - 'src/silk_decoder.h'
-    - 'src/silk_decoder_wrapper.h'
   include-directives:
     - 'src/silk_decoder.h'
-    - 'src/silk_decoder_wrapper.h'
 preamble: |
   // ignore_for_file: always_specify_types
   // ignore_for_file: camel_case_types

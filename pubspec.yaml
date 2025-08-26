@@ -1,7 +1,7 @@
 name: silk_decoder
 description: "A Dart library for decoding SILK audio files to PCM format using native bindings, with asynchronous support to avoid blocking the main thread."
-version: 0.0.1
-homepage: https://github.com/czqu/silk_decoder
+version: 0.0.2
+homepage: https://czqu.net
 repository: https://github.com/czqu/silk_decoder/tree/main
 environment:
   sdk: ^3.9.0

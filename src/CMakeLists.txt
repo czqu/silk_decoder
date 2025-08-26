@@ -2,24 +2,22 @@
 # installed. You should not increase this version, as doing so will cause
 # the plugin to fail to compile for some customers of the plugin.
 cmake_minimum_required(VERSION 3.15)
-
+set(CMAKE_OSX_DEPLOYMENT_TARGET 10.11)
 project(silk_decoder_library VERSION 0.0.1 LANGUAGES C)
-set(CMAKE_C_STANDARD 99)
-file(GLOB SILK_SOURCES
-        "silk/src/*.c"
-        "silk/src/*.S"
-)
-list(APPEND SILK_SOURCES )
 
-add_library(silk_decoder SHARED
-        "silk_decoder.c"
-        ${SILK_SOURCES}
-)
+add_subdirectory(silk)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64")
+endif ()
 
-target_include_directories(silk_decoder PUBLIC
-        "${CMAKE_CURRENT_SOURCE_DIR}/silk/interface"
-        "${CMAKE_CURRENT_SOURCE_DIR}/silk/src"
-)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR ${CMAKE_SYSTEM_NAME} MATCHES "iOS")
+    add_library(silk_decoder STATIC
+            "silk_decoder.c" )
+else ()
+    add_library(silk_decoder SHARED
+            "silk_decoder.c" )
+endif ()
+target_link_libraries(silk_decoder PRIVATE silk)
 set_target_properties(silk_decoder PROPERTIES
         PUBLIC_HEADER silk_decoder.h
         OUTPUT_NAME "silk_decoder"

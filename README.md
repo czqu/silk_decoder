@@ -49,7 +49,7 @@ Future<int> decodeSilkFileAsync(
 A `Future<int>` that completes with:
 
 - `0`: Decoding successful
-- Non-zero: Error code (specific 含义 depends on native implementation)
+- Non-zero: Error code 
 
 ## Acknowledgments
 

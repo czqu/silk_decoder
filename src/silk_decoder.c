@@ -39,8 +39,7 @@ void swap_endian(
  * @param sample_rate 解码后的 pcm 采样率 in Hz.
  * @return int 0 表示成功, -1 表示失败.
  */
-FFI_PLUGIN_EXPORT int
-decode_silk_file(const char *input_path, const char *output_path, int sample_rate) {
+FFI_PLUGIN_EXPORT int decode_silk_file(const char *input_path, const char *output_path, int sample_rate) {
     size_t counter;
     SKP_int16 ret, len, tot_len;
     SKP_int16 nBytes;
