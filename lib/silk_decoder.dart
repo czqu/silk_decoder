@@ -108,7 +108,6 @@ Future<SendPort> _helperIsolateSendPort = () async {
             data.sampleRate,
           );
 
-
           malloc.free(inputPath);
           malloc.free(outputPath);
 
